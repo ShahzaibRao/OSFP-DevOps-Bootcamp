@@ -8,8 +8,8 @@ module "osfp_vm" {
   disk_size         = "15G"
   storage           = "local-lvm"
   cloudinit_snippet = "local:snippets/qemu-guest-agent.yml"
-  proxmox_user      = "root@pam"
-  proxmox_password  = "saud@4040"
+  proxmox_user      = "your-user-name"
+  proxmox_password  = "your_password"
   ssh_user          = "shahzaib"
   ssh_password      = "admin"
   # Pass IP addresses here
