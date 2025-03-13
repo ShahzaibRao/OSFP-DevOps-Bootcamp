@@ -30,18 +30,13 @@ cd <your-repo-directory>
 ```
 
 ### 2. Configure Terraform Variables
-Update the `terraform.tfvars` file with your Proxmox details:
+Update the `main.tf` file with your Proxmox details:
 ```hcl
 proxmox_api_url    = "https://your-proxmox-server:8006/"
 proxmox_api_token  = "your-proxmox-api-token"
 proxmox_node       = "proxmox-node-name"
 vm_template        = "debian-cloud-template"
-vms = {
-  gitlab   = { ip = "192.168.2.180", cores = 2, memory = 4096 }
-  docker   = { ip = "192.168.2.181", cores = 2, memory = 4096 }
-  microk8s = { ip = "192.168.2.182", cores = 4, memory = 8192 }
-  checkmk  = { ip = "192.168.2.183", cores = 2, memory = 4096 }
-}
+
 ```
 
 ### 3. Initialize Terraform
