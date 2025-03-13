@@ -1,0 +1,49 @@
+---
+- name: Install and Configure GitLab on Debian 12
+  hosts: gitlab
+  become: yes
+  tasks:
+    - name: Update APT package index
+      apt:
+        update_cache: yes
+
+    - name: Install GitLab dependencies
+      apt:
+        name:
+          - wget
+          - ca-certificates
+          - curl
+          - apt-transport-https
+          - gnupg2
+        state: present
+
+    - name: Add GitLab repository and install GitLab
+      shell: |
+        curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+        apt install gitlab-ce -y
+      args:
+        executable: /bin/bash
+
+    - name: Configure GitLab external URL
+      lineinfile:
+        path: /etc/gitlab/gitlab.rb
+        regexp: '^external_url'
+        line: "external_url 'http://gitlab.raoshahzaib.site'"
+
+    - name: Configure Let's Encrypt email
+      lineinfile:
+        path: /etc/gitlab/gitlab.rb
+        regexp: '^letsencrypt\["contact_emails"\]'
+        line: "letsencrypt['contact_emails'] = ['admin@raoshahzaib.site']"
+
+    - name: Reconfigure GitLab
+      command: gitlab-ctl reconfigure
+
+    - name: Retrieve initial GitLab root password
+      command: cat /etc/gitlab/initial_root_password
+      register: gitlab_root_password
+      changed_when: false
+
+    - name: Display GitLab root password
+      debug:
+        msg: "GitLab root password: {{ gitlab_root_password.stdout }}"

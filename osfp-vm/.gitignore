@@ -1,0 +1,30 @@
+# Terraform files
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Ansible files
+*.retry
+inventory.ini
+vault_password.txt
+
+# Kubernetes
+.kube/
+manifests/*.log
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Secrets and credentials
+.env
+secrets.yml
+id_rsa
+id_rsa.pub
+
+# VSCode and other IDE files
+.vscode/
+.idea/

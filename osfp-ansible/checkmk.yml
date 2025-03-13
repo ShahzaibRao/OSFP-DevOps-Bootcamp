@@ -1,0 +1,50 @@
+---
+- name: Install Checkmk on Debian 12 (Bookworm)
+  hosts: checkmk
+  become: true
+  tasks:
+    - name: Ensure required packages are installed
+      apt:
+        name:
+          - wget
+          - gnupg
+          - curl
+          - lsb-release
+          - apt-transport-https
+        state: present
+        update_cache: yes
+
+    - name: Download Checkmk package for Debian
+      get_url:
+        url: "https://download.checkmk.com/checkmk/2.3.0p27/check-mk-raw-2.3.0p27_0.bookworm_amd64.deb"
+        dest: "/tmp/checkmk.deb"
+
+    - name: Install Checkmk
+      apt:
+        deb: "/tmp/checkmk.deb"
+
+    - name: Verify Checkmk installation
+      command: omd version
+      register: checkmk_version
+      changed_when: false
+
+    - name: Display Checkmk version
+      debug:
+        msg: "Checkmk version installed: {{ checkmk_version.stdout }}"
+
+    - name: Create Checkmk site
+      command: omd create osfp
+      register: checkmk_site_creation
+      changed_when: "'Created new site' in checkmk_site_creation.stdout"
+    - name: Display Checkmk login details
+      debug:
+        msg: "{{ checkmk_site_creation.stdout }}"
+
+        
+    - name: Start Checkmk site
+      command: omd start osfp
+      changed_when: false
+
+    - name: Enable public access to the web interface
+      command: omd config osfp set APACHE_TCP_ADDR 0.0.0.0
+      changed_when: false

@@ -1,0 +1,37 @@
+---
+- name: Install MicroK8s on MicroK8s VM
+  hosts: microk8s
+  become: true
+  tasks:
+    - name: Ensure Snap package manager is installed
+      apt:
+        name: snapd
+        state: latest
+        update_cache: yes
+
+    - name: Restart Snap service
+      systemd:
+        name: snapd
+        state: restarted
+        enabled: yes
+
+    - name: Install Snap core (if missing)
+      shell: snap install core
+      register: snap_core_install
+      failed_when: snap_core_install.rc != 0
+
+    - name: Refresh Snap core to the latest version
+      shell: snap refresh core
+      register: snap_refresh
+      failed_when: snap_refresh.rc != 0
+
+    - name: Install MicroK8s
+      shell: snap install microk8s --classic
+      register: microk8s_install
+      failed_when: microk8s_install.rc != 0
+
+    - name: Add user to MicroK8s group
+      user:
+        name: "{{ ansible_user }}"
+        groups: microk8s
+        append: yes
